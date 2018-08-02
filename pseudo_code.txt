@@ -1,0 +1,84 @@
+Pseudo Code for Research_ai_bot:
+
+class chat_bot:
+	
+	def train_with_BN:
+	-input: Text
+	-output: Dictionary
+
+		set_word = Word_Tokenize(Data)
+		ouput = (word[i], (word[i+1]), num)
+
+		for each word in set_word:
+			if(check_if_exists(set_word[i], set_word[i+1])):
+				ouput[set_word[i]][set_word[i+1]] +=1
+			else: ouput[set_word[i]].append((set_word[i+1], 1))
+
+		return ouput
+
+	def train_with_rnn:
+	-input: Text
+	-output: RNN_variable(Weight, bias)
+		while True:
+			inputs = get_inputs(Text)
+			targets = get_targets(Text)
+
+			dWxh, dWhh, dWhy, dbh, dby= self.lossFun(inputs, targets)
+
+			for param, dparam, mem in each of [[Wxh, Whh, Why, bh, by], [dWxh, dWhh, dWhy, dbh, dby], [mWxh, mWhh, mWhy, mbh, mby]]:
+				mem += dparam * dparam
+				param += learning_rate * dparam / square root of (mem + 1e-8)
+
+			return [Wxh, Whh, Why, bh, by]
+
+	def lossFun
+	-input: input_text, target_text
+	-ouput: dWxh, dWhh, dWhy, dbh, dby(The results of BPTT)
+		xs, hs, ys, ps = {},{},{},{}
+		hs[-1] = copy of (hprev)
+		loss = 0
+		for time_step in each of time_steps:
+			xs[time_step] = np.zeros((vocab_size, 1))
+			xs[time_step][inputs[time_step]] = 1
+			hs[time_step] = fun_tanh(Wxh * xs[time_step]) + Whh * hs[time_step - 1] + bh
+			ys[time_step] = Why * hs[time_step] + by
+			ps[time_step] = fun_softmax(ys[time_step])
+		dhnext = {}
+		for time_step in reversed(range(len(inputs))):
+			dy = copy of (ps[time_step])
+			dy[targets[time_step]] -= 1
+			dWhy += dy * hs[time_step]
+			dby += dy
+			dh = Why * dy + dhnext
+			dhraw = (1-hs[time_step]*hs[time_step]) * dh
+			dbh += dhraw
+			dWxh += dhraw * xs[time_step]
+			dWhh += dhraw * hs[time_step - 1]
+			dhnext = Whh * dhraw
+
+		return dWxh, dWhh, dWhy, dbh, dby
+
+	def response_generator:
+	-input: sentence, num
+	-ouput: responses
+
+		keywords = keyword_classifier(sentence)
+		sub_sets = get_all_subsets(keywords)
+		responses = []
+		while True:
+			for sub_set inn each sub_sets:
+				temp = get_gram_using_rnn()
+				for keyword in sub_set:
+					temp = get_sentence_with_keyword(keyword)
+				responses.append(temp)
+				if len(responses) == num: break
+			if len(responses) == num: break
+
+		return responses
+
+
+
+[['years', 'boys', 'that', 'let', '.'], ['hello', 'jews', 'shall', 'still', 'able', 'as', 'meeting', 'every', 'rest', 'hope', 'and', 'the', 'the', 'georgia', 'can', 'be', 'little', 'and', 'the', 'lookout', 'of', 'mississippi', 'as', 'this', 'reality', 'god', ',', 'the', 'fierce', 'negro', 'that', 'thee', ',', 'and', 'of', 'tranquility', 'with', 'all', 'men', 'in', 'the', 'history', 'we', 'were', 'cooling', 'american', 'god', 'from', 'their', 'words', 'of', 'stone', 'freedom', '.'], ['daesung', 'words', ',', 'insofar', 'at', 'the', 'thee', 'on', 'night', 'slaves', 'the', 'is', 'for', 'a', 'great', 'nothing', 'have', 'history', ',', 'this', 'fathers', 'and', 'able', ',', 'of', 'this', 'areas', 'of', 'able', 'prodigious', '.'], ['daesung', 'hello', 'one', 'promise', 'the', 'former', '``', 'high', 'years', 'of', 'their', 'injustice', ',', 'we', 'ring', 'with', 'the', 'injustice', ',', 'go', 'to', 'shake', 'of', 'curvaceous', 'i', 'which', 'was', 'i', 'a', 'something', 'and', 'dream', '.'], ['years', 'highways', 'of', 'land', 'molehill', 'of', 'freedom', 'invigorating', 'that', 'the', 'great', 'men', 'of', 'obvious', 'land', 'to', 'walk', 'of', 'it', 'when', 'the', 'in', 'nation', '.'], ['hello', 'i', 'of', 'interposition', 'day', '.'], ['daesung', 'whites', 'of', 'freedom', 'and', 'not', '.'], ['daesung', 'hello', 'is', 'bound', 'not', 'to', 'be', 'new', 'republic', ',', 'the', 'great', 'catholics', 'at', 'the', 'sing', 'were', 'in', 'mighty', 'hotels', 'to', 'that', 'one', 'dream', 'the', 'jews', 'will', 'now', 'be', 'off', 'the', 'check', 'one', 'freedom', 'of', '.'], ['people', 'hands', 'not', ',', 'the', 'of', 'nullification', 'of', 'a', 'character', 'time', 'of', 'life', 'honoring', 'spiritual', 'the', 'faith', 'of', 'mighty', 'able', 'of', 'a', 'society', 'of', 'symbolic', 'insufficient', 'in', 'the', 'america', 'but', 'a', 'urgency', 'of', 'thirst', "'s", 'black', 'suffering', 'to', 'ring', 'to', ',', 'together', 'of', 'its', 'able', 'sweltering', "'s", 'vast', 'violence', 'as', 'stone', ',', '.'], ['hello', 'people', 'well', ',', 'this', 'spot', 'of', 'demand', ',', 'they', 'have', 'a', 'meaning', '.']]
+
+
+
